@@ -11,7 +11,7 @@ import './App.css';
 // import Form from './lesson14/Form';
 // import Clock from './lesson15/Clock';
 // import Effect from './lesson16/Effect'
-import Mikledet from './lesson16/Mikledet';
+//import Mikledet from './lesson16/Mikledet';
 //  import Ref from './lesson17/Ref';
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
       {/* <Form/> */}
       {/* <Clock/> */}
       {/* <Effect/> */}
-      <Mikledet />
+      {/* <Mikledet /> */}
       {/* <Ref/> */}
       
     </div>
