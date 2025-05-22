@@ -1,12 +1,14 @@
-import axios from "./axios"
 
-const url = 'Login'
 
-export const login = async (userName: string, password: string) => {
-    const response = await axios.post<string>(url + '/login', { userName, password })
-    return response.data
-}
+import axios from "./axios";
 
-export const signUp = async () => {
+const url = 'Login';
 
-}
+export const login = async (email: string, password: string) => {
+    const response = await axios.post<{ token: string }>(url + '/login', {
+        email,
+        password
+    });
+
+    return response; 
+};

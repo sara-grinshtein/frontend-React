@@ -12,4 +12,4 @@ axiosInstance.interceptors.response.use((response: AxiosResponse) => {
     return response
 })
 
-export default axiosInstance
+export default axiosInstance  
