@@ -1,14 +1,15 @@
-
-
 import axios from "./axios";
 
 const url = 'Login';
 
-export const login = async (email: string, password: string) => {
-    const response = await axios.post<{ token: string }>(url + '/login', {
-        email,
-        password
-    });
+type LoginData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: string;
+};
 
-    return response; 
+export const login = async (data: LoginData) => {
+  return await axios.post<{ token: string }>(`${url}/login`, data);
 };

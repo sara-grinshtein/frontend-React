@@ -1,9 +1,8 @@
-
 import { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../sevices/auth.service";
 import { setSession } from "../auth/auth.utils";
-import { setAuth } from "../redux/auth/authSlice";;
+import { setAuth } from "../redux/auth/authSlice";
 import { useAppDispatch } from "../redux/store";
 const jwt_decode = require("jwt-decode");
 
@@ -15,29 +14,36 @@ export const LoginPage = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
+    const firstName = formData.get("firstName")?.toString() || "";
+    const lastName = formData.get("lastName")?.toString() || "";
     const email = formData.get("email")?.toString() || "";
     const password = formData.get("password")?.toString() || "";
+    const role = formData.get("role")?.toString() || "";
 
     try {
-      const response = await login(email, password);
-      const token = response.data.token;
+      const response = await login({
+        firstName,
+        lastName,
+        email,
+        password,
+        role
+      });
 
-      setSession(token); // שמירה ב-localStorage והגדרת Authorization
+      const token = response.data.token;
+      setSession(token);
 
       const decoded: any = jwt_decode(token);
-      const role = decoded.role;
 
       dispatch(
         setAuth({
           email: decoded.email,
-          role: role,
+          role: decoded.role,
         })
       );
 
-      // ניתוב לפי תפקיד
-      if (role === "Volunteer") {
+      if (decoded.role === "Volunteer") {
         navigate("/volunteer-dashboard");
-      } else if (role === "Helped") {
+      } else if (decoded.role === "Helped") {
         navigate("/helped-dashboard");
       } else {
         navigate("/home");
@@ -49,11 +55,17 @@ export const LoginPage = () => {
 
   return (
     <form onSubmit={onSubmit}>
+      <input name="firstName" placeholder="שם פרטי" required />
+      <input name="lastName" placeholder="שם משפחה" required />
       <input name="email" placeholder="Email" required />
       <input name="password" type="password" placeholder="Password" required />
-      <button type="submit">Login</button>
+      <select name="role" required>
+        <option value="">בחר תפקיד</option>
+        <option value="Volunteer">מתנדב</option>
+        <option value="Helped">נעזר</option>
+      </select>
+      <button type="submit">התחברות</button>
       עדיין לא רשום? <Link to="/auth/sign-up">הרשם</Link>
     </form>
   );
 };
-//aaaaaaaaaaaaaa
