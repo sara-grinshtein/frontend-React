@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios"
 import { removeSession } from "../auth/auth.utils"
 
-const baseURL = 'https://localhost:7091/api'
+const baseURL = 'https://localhost:7273/api'
 
 const axiosInstance = axios.create({ baseURL })
 

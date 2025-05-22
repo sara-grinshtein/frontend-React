@@ -7,7 +7,6 @@ type LoginData = {
   lastName: string;
   email: string;
   password: string;
-  role: string;
 };
 
 export const login = async (data: LoginData) => {

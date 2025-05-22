@@ -1,16 +1,31 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { LoginPage } from "../pages/LoginPage";
+import VolunteerDashboard from "../pages/VolunteerDashboard";
+import HelpedDashboard from "../pages/HelpedDashboard";
+import HomePage from "../pages/HomePage";
 
-// ראוטר פשוט עם רק דף התחברות
-const router = createBrowserRouter([
+ const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/home",
+    element: <HomePage />
+  },
+  {
+    path: "/auth/login",
     element: <LoginPage />
+  },
+  {
+    path: "/volunteer-dashboard",
+    element: <VolunteerDashboard />
+  },
+  {
+    path: "/helped-dashboard",
+    element: <HelpedDashboard />
   },
 ]);
 
 const Router = () => {
   return <RouterProvider router={router} />;
 };
+
 
 export default Router;
