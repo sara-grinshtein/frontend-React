@@ -1,95 +1,3 @@
-// import { FormEvent } from "react";
-// import { Link, useNavigate } from "react-router-dom";
-// import { login } from "../sevices/auth.service";
-// import { setSession } from "../auth/auth.utils";
-// import { setAuth } from "../redux/auth/authSlice";
-// import { useAppDispatch } from "../redux/store";
-// import { jwtDecode } from "jwt-decode";
-
-
-// // טיפוס מותאם לפענוח הטוקן
-// interface JwtPayload {
-//   email: string;
-//   role: string;
-//   [key: string]: any;
-// }
-
-// export const LoginPage = () => {
-//   const navigate = useNavigate();
-//   const dispatch = useAppDispatch();
-
-//   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-//     event.preventDefault();
-//     const formData = new FormData(event.currentTarget);
-
-//     const firstName = formData.get("firstName")?.toString() || "";
-//     const lastName = formData.get("lastName")?.toString() || "";
-//     const email = formData.get("email")?.toString() || "";
-//     const password = formData.get("password")?.toString() || "";
-
-//     console.log(firstName, lastName, email, password);
-
-//     try {
-//       const response = await login({
-//         firstName,
-//         lastName,
-//         email,
-//         password,
-//       });
-
-//       const token = response.data?.token;
-
-//       if (!token) {
-//         alert("התחברות נכשלה: טוקן לא חזר מהשרת");
-//         return;
-//       }
-
-//       setSession(token);
-
-//      const decoded = jwtDecode<JwtPayload>(token);
-//       console.log("Decoded token:", decoded);
-
-//       dispatch(
-//         setAuth({
-//           email: decoded.email,
-//           role: decoded.role,
-//         })
-//       );
-//       const role = decoded.role?.toLowerCase();
-//       console.log(role)
-
-//       if (role === "volunteer") 
-//       {
-//       navigate("/volunteer-dashboard");
-//       } 
-//       else if (role === "helped")
-//       {
-//       navigate("/helped-dashboard");
-//       }
-//       else {
-//       navigate("/home");
-//      }
-      
-//     } catch (error) {
-//       console.error("שגיאה בהתחברות", error);
-//       alert("שגיאה בהתחברות: " + ((error as any).response?.data || "שגיאה לא מזוהה"));
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={onSubmit}>
-//       <input name="firstName" placeholder="שם פרטי" required />
-//       <input name="lastName" placeholder="שם משפחה" required />
-//       <input name="email" placeholder="Email" required />
-//       <input name="password" type="password" placeholder="Password" required />
-//       <button type="submit">התחברות</button>
-//       <p>
-//         עדיין לא רשום? <Link to="/auth/sign-up">הרשם</Link>
-//       </p>
-//     </form>
-//   );
-// };
-
 import { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../sevices/auth.service";
@@ -163,6 +71,7 @@ export const LoginPage = () => {
 
   return (
     <form onSubmit={onSubmit}>
+      <h1>login page</h1>
       <input name="firstName" placeholder="שם פרטי" required />
       <input name="lastName" placeholder="שם משפחה" required />
       <input name="email" placeholder="Email" required />
