@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import axios from "../sevices/axios"; // ודא שיש לך קובץ axios מוגדר
 import { useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+
+interface MyToken {
+  userId: number;
+}
 
 const HelpRequestPage = () => {
   const [formData, setFormData] = useState({
@@ -20,13 +25,27 @@ const HelpRequestPage = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("/api/help-request", formData, {
+      if (!token) throw new Error("Token not found");
+      const decodedToken = jwt_decode<MyToken>(token);
+      console.log(decodedToken); 
+      const helped_id = decodedToken.userId;
+      console.log("helped id is: "+ helped_id)
+      const dataToSend = {
+    //  message_id: 0,
+        volunteer_id: null, // זהו התיקון הקריטי!
+        helped_id: helped_id,
+        description: formData.description,
+        isDone: false,
+        confirmArrival: false
+      };
+
+      await axios.post("/message", dataToSend, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       alert("הבקשה נשלחה בהצלחה");
-      navigate("/helped-dashboard"); // או כל דף אחר
+      navigate("/helped-dashboard");
     } catch (error) {
       alert("שגיאה בשליחת הבקשה");
       console.error(error);

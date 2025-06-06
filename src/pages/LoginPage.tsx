@@ -4,7 +4,7 @@ import { login } from "../sevices/auth.service";
 import { setSession } from "../auth/auth.utils";
 import { setAuth } from "../redux/auth/authSlice";
 import { useAppDispatch } from "../redux/store";
-import { jwtDecode } from "jwt-decode";
+import  jwtDecode  from "jwt-decode";
 
 interface JwtPayload {
   email: string;
