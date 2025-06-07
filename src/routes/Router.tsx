@@ -8,6 +8,7 @@ import HomePage from "../pages/HomePage";
 import SignUpPage from "../pages/SingUpPage";
 import HelpRequestPage from "../pages/HelpRequestPage";
 import MainLayout from "../layouts/layout"; 
+import SeeMyMassagesHelped from "../pages/seeMyMassagesHelped"; 
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "helped-dashboard",
         element: <HelpedDashboard />,
+      },
+      {
+        path: "my-messages", 
+        element: <SeeMyMassagesHelped />,
       },
     ],
   },

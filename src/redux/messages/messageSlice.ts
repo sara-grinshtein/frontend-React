@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Message } from "../../types/messsage.types"
+import { MessageType } from "../../types/messsage.types"
 
-const initialState: Message[] = []
+const initialState: MessageType[] = []
 
 const messagesSlice = createSlice({
     name: 'messages',
