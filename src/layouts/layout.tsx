@@ -1,19 +1,20 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
+import { Container, Navbar, NavLinkStyled, MainContent } from "./style";
 
 const MainLayout = () => {
   return (
-    <div dir="rtl">
-      <nav style={{ padding: "1rem", background: "#e0e0e0" }}>
-        <Link to="/help-request" style={{ marginLeft: "1rem" }}>בקשת עזרה</Link>
-         <Link to="my-messages" style={{ marginLeft: "1rem" }}> השאר תגובה</Link>
+    <Container>
+      <Navbar>
+        <NavLinkStyled to="/help-request">בקשת עזרה</NavLinkStyled>
+        <NavLinkStyled to="/my-messages">השאר תגובה</NavLinkStyled>
         {/* בעתיד תוסיף כאן קישורים נוספים */}
-      </nav>
+      </Navbar>
 
-      <main style={{ padding: "2rem" }}>
+      <MainContent>
         <Outlet />
-      </main>
-    </div>
+      </MainContent>
+    </Container>
   );
 };
 

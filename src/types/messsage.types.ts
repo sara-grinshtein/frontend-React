@@ -5,4 +5,6 @@ export type MessageType = {
     isDone: boolean;
     description: string;
     confirmArrival?: boolean;
+    hasResponse: boolean;
+
 }
