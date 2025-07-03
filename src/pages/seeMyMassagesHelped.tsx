@@ -1,62 +1,7 @@
-// import React, { useEffect, useState } from 'react';
-// import axiosInstance from '../sevices/axios'
-// import { MessageType } from '../types/messsage.types';
-
-// const SeeMyMassagesHelped = () => {
-//     const [massages, setMassages] = useState<MessageType[]>([]);
-//     const [loading, setLoading] = useState(true);
-
-//     useEffect(() => {
-//         (async () => {
-//             try {
-//                 const token = localStorage.getItem('token');
-//                 if (!token) {
-//                     console.error("No token found");
-//                     setLoading(false);
-//                     return;
-//                 }
-
-//                 const response = await axiosInstance.get(`/message/my-messages`, {
-//                     headers: { Authorization: `Bearer ${token}` }
-//                 });
-
-//                 setMassages(response.data);
-//             } catch (error) {
-//                 console.error("Error fetching massages:", error);
-//             } finally {
-//                 setLoading(false);
-//             }
-//         })();
-//     }, []);
-
-//     if (loading) return <div>טוען...</div>;
-
-//     return (
-//         <div className="p-4">
-//             <h1> עמוד שנעזר רואה את הבשקשות שהוא הכניס ויכול להשאיר תגובות</h1>
-//             <h1 className="text-xl font-bold mb-4">הבקשות שלי</h1>
-//             {massages.length === 0 ? (
-//                 <div>לא נמצאו בקשות</div>
-//             ) : (
-//                 <ul className="space-y-2">
-//                     {massages.map((massage) => (
-//                         <li key={massage.message_id} className="p-2 border rounded">
-//                             <p><strong>תיאור:</strong> {massage.description}</p>
-//                             <p><strong>טופל:</strong> {massage.isDone ? "כן" : "לא"}</p>
-//                             <p><strong>אישור הגעה:</strong> {massage.confirmArrival ? "כן" : "לא"}</p>
-//                         </li>
-//                     ))}
-//                 </ul>
-//             )}
-//         </div>
-//     );
-// };
-
-// export default SeeMyMassagesHelped;
-
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../sevices/axios';
 import { MessageType } from '../types/messsage.types';
+import { ResponseType } from '../types/response.types';
 import {
   Container,
   Title,
@@ -66,17 +11,37 @@ import {
   Label,
   Value,
   Loading,
-  Empty
+  Empty,
+  Button,
+  Modal,
+  ModalContent,
+  Input,
+  Textarea
 } from "./style-seeMyMessages";
+import jwt_decode from 'jwt-decode';
+
+type MyToken = {
+  sub: string;
+  name?: string;
+  exp: number;
+  userId: string; 
+};
 
 const SeeMyMassagesHelped = () => {
   const [massages, setMassages] = useState<MessageType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null);
+  const [context, setContext] = useState('');
+  const [rating, setRating] = useState<number>(5);
+
+  const token = localStorage.getItem('token');
+  const decodedToken = token ? jwt_decode<MyToken>(token) : null;
+  const helpedIdFromToken = decodedToken?.userId ? parseInt(decodedToken.userId) : null;
 
   useEffect(() => {
     (async () => {
       try {
-        const token = localStorage.getItem('token');
         if (!token) {
           console.error("No token found");
           setLoading(false);
@@ -94,7 +59,37 @@ const SeeMyMassagesHelped = () => {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [token]);
+
+  const openModal = (messageId: number) => {
+    setSelectedMessageId(messageId);
+    setContext('');
+    setRating(5);
+    setShowModal(true);
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedMessageId || !token || helpedIdFromToken === null) return;
+
+    const responsePayload = {
+      helped_id: helpedIdFromToken,
+      message_id: selectedMessageId,
+      context,
+      rating
+    };
+
+    console.log("תגובה לפני שליחה:", JSON.stringify(responsePayload, null, 2));
+
+    try {
+      await axiosInstance.post('/response', responsePayload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log("✅ תגובה נשלחה בהצלחה לשרת"); // ✅ הודעה בהצלחה
+      setShowModal(false);
+    } catch (error) {
+      console.error("❌ שגיאה בשליחת תגובה לשרת:", error); // ✅ הודעה בשגיאה
+    }
+  };
 
   if (loading) return <Loading>טוען...</Loading>;
 
@@ -117,8 +112,32 @@ const SeeMyMassagesHelped = () => {
               <Label>אישור הגעה:</Label> 
               <Value isPositive={massage.confirmArrival}>{massage.confirmArrival ? 'כן' : 'לא'}</Value>
             </Field>
+            <Button onClick={() => openModal(massage.message_id)}>השאר תגובה</Button>
           </MessageCard>
         ))
+      )}
+
+      {showModal && (
+        <Modal>
+          <ModalContent>
+            <h2>השאר תגובה</h2>
+            <Label>תגובה:</Label>
+            <Textarea 
+              value={context} 
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContext(e.target.value)} 
+            />
+            <Label>דירוג (1-5):</Label>
+            <Input 
+              type="number" 
+              min="1" 
+              max="5" 
+              value={rating} 
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRating(Number(e.target.value))} 
+            />
+            <Button onClick={handleSubmit}>שלח</Button>
+            <Button onClick={() => setShowModal(false)}>בטל</Button>
+          </ModalContent>
+        </Modal>
       )}
     </Container>
   );

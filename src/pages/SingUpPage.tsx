@@ -74,13 +74,7 @@ export const SignUpPage = () => {
         onChange={onChange}
         required
       />
-      <input
-        name="location"
-        placeholder="מיקום / אזור"
-        value={formData.location}
-        onChange={onChange}
-        required
-      />
+      
       <select name="role" value={formData.role} onChange={onChange}>
         <option value="Volunteer">מתנדב</option>
         <option value="Helped">נעזר</option>

@@ -32,7 +32,7 @@ const HelpRequestPage = () => {
       console.log("helped id is: "+ helped_id)
       const dataToSend = {
     //  message_id: 0,
-        volunteer_id: null, // זהו התיקון הקריטי!
+        volunteer_id: null, 
         helped_id: helped_id,
         description: formData.description,
         isDone: false,
