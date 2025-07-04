@@ -4,11 +4,11 @@ import { login } from "../sevices/auth.service";
 import { setSession } from "../auth/auth.utils";
 import { setAuth } from "../redux/auth/authSlice";
 import { useAppDispatch } from "../redux/store";
-import  jwtDecode  from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 interface JwtPayload {
   email: string;
-  [key: string]: any; // נדרש כדי לאפשר גישה לשדות עם URL כמפתח
+  [key: string]: any;
 }
 
 export const LoginPage = () => {
@@ -19,18 +19,13 @@ export const LoginPage = () => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
-    const firstName = formData.get("firstName")?.toString() || "";
-    const lastName = formData.get("lastName")?.toString() || "";
-    const email = formData.get("email")?.toString() || "";
-    const password = formData.get("password")?.toString() || "";
+    const email = formData.get("email")?.toString().trim().toLowerCase() || "";
+    const password = formData.get("password")?.toString().trim() || "";
+
+    console.log("Trying to login with:", { email, password });
 
     try {
-      const response = await login({
-        firstName,
-        lastName,
-        email,
-        password,
-      });
+      const response = await login({ email, password });
 
       const token = response.data?.token;
 
@@ -44,9 +39,8 @@ export const LoginPage = () => {
       const decoded = jwtDecode<JwtPayload>(token);
       console.log("Decoded token:", decoded);
 
-      // שליפת role מהמפתח עם הכתובת
-      const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]?.toLowerCase();
-      console.log("role from token:", role);
+      const role =
+        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]?.toLowerCase();
 
       dispatch(
         setAuth({
@@ -55,7 +49,6 @@ export const LoginPage = () => {
         })
       );
 
-      // ניווט לפי תפקיד
       if (role === "volunteer") {
         navigate("/volunteer-dashboard");
       } else if (role === "helped") {
@@ -65,15 +58,17 @@ export const LoginPage = () => {
       }
     } catch (error) {
       console.error("שגיאה בהתחברות", error);
-      alert("שגיאה בהתחברות: " + ((error as any).response?.data || "שגיאה לא מזוהה"));
+      const message =
+        (error as any).response?.data?.message ||
+        (error as any).response?.data ||
+        "שגיאה לא מזוהה";
+      alert("שגיאה בהתחברות: " + message);
     }
   };
 
   return (
     <form onSubmit={onSubmit}>
       <h1>login page</h1>
-      <input name="firstName" placeholder="שם פרטי" required />
-      <input name="lastName" placeholder="שם משפחה" required />
       <input name="email" placeholder="Email" required />
       <input name="password" type="password" placeholder="Password" required />
       <button type="submit">התחברות</button>
@@ -84,3 +79,4 @@ export const LoginPage = () => {
   );
 };
 
+export default LoginPage;
