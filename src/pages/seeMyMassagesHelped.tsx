@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+ import React, { useEffect, useState } from 'react';
 import axiosInstance from '../sevices/axios';
 import { MessageType } from '../types/messsage.types';
 import { ResponseType } from '../types/response.types';
@@ -39,27 +39,27 @@ const SeeMyMassagesHelped = () => {
   const decodedToken = token ? jwt_decode<MyToken>(token) : null;
   const helpedIdFromToken = decodedToken?.userId ? parseInt(decodedToken.userId) : null;
 
-  useEffect(() => {
-    (async () => {
-      try {
-        if (!token) {
-          console.error("No token found");
-          setLoading(false);
-          return;
-        }
-
-        const response = await axiosInstance.get(`/message/my-messages`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        setMassages(response.data);
-      } catch (error) {
-        console.error("Error fetching massages:", error);
-      } finally {
+  // ✅ פונקציה שמביאה את כל הבקשות מחדש מהשרת
+  const fetchMassages = async () => {
+    try {
+      if (!token) {
+        console.error("No token found");
         setLoading(false);
+        return;
       }
-    })();
-  }, [token]);
+
+      const response = await axiosInstance.get(`/message/my-messages`);
+      setMassages(response.data);
+    } catch (error) {
+      console.error("Error fetching massages:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMassages();
+  }, []);
 
   const openModal = (messageId: number) => {
     setSelectedMessageId(messageId);
@@ -78,16 +78,12 @@ const SeeMyMassagesHelped = () => {
       rating
     };
 
-    console.log("תגובה לפני שליחה:", JSON.stringify(responsePayload, null, 2));
-
     try {
-      await axiosInstance.post('/response', responsePayload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      console.log("✅ תגובה נשלחה בהצלחה לשרת"); // ✅ הודעה בהצלחה
+      await axiosInstance.post('/response', responsePayload);
       setShowModal(false);
+      await fetchMassages(); // ✅ רענון הרשימה אחרי שליחת תגובה
     } catch (error) {
-      console.error("❌ שגיאה בשליחת תגובה לשרת:", error); // ✅ הודעה בשגיאה
+      console.error("❌ שגיאה בשליחת תגובה לשרת:", error);
     }
   };
 
@@ -104,14 +100,23 @@ const SeeMyMassagesHelped = () => {
         massages.map((massage) => (
           <MessageCard key={massage.message_id}>
             <Field><Label>תיאור:</Label> {massage.description}</Field>
+
+            {massage.location && (
+              <Field>
+                <Label>כתובת:</Label> {massage.location}
+              </Field>
+            )}
+
             <Field>
               <Label>טופל:</Label> 
               <Value isPositive={massage.isDone}>{massage.isDone ? 'כן' : 'לא'}</Value>
             </Field>
+
             <Field>
               <Label>אישור הגעה:</Label> 
               <Value isPositive={massage.confirmArrival}>{massage.confirmArrival ? 'כן' : 'לא'}</Value>
             </Field>
+
             <Button onClick={() => openModal(massage.message_id)}>השאר תגובה</Button>
           </MessageCard>
         ))

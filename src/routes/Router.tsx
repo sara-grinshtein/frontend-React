@@ -7,13 +7,16 @@ import HelpedDashboard from "../pages/HelpedDashboard";
 import HomePage from "../pages/HomePage";
 import SignUpPage from "../pages/SingUpPage";
 import HelpRequestPage from "../pages/HelpRequestPage";
-import MainLayout from "../layouts/layout"; 
-import SeeMyMassagesHelped from "../pages/seeMyMassagesHelped"; 
+import Layout from "../layouts/layout";
+import SeeMyMassagesHelped from "../pages/seeMyMassagesHelped";
+import VolunteerAssignedMessages from "../pages/SeeAssignedMessagesVolunteer";
+
+
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />,
+    element: <Layout />, // ✅ תואם לשם הקומפוננטה
     children: [
       {
         path: "",
@@ -44,9 +47,15 @@ const router = createBrowserRouter([
         element: <HelpedDashboard />,
       },
       {
-        path: "my-messages", 
+        path: "my-messages",
         element: <SeeMyMassagesHelped />,
       },
+      
+{
+  path: "volunteer-my-messages",
+  element: <VolunteerAssignedMessages />,
+}
+      
     ],
   },
 ]);
