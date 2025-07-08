@@ -2,7 +2,7 @@
 import { removeSession } from "../auth/auth.utils";
 
 // כתובת בסיס של ה־API
-const baseURL = 'https://localhost:7273/api';
+const baseURL =  "http://localhost:5171/api";
 
 // יצירת מופע axios עם baseURL
 const axiosInstance = axios.create({ baseURL });

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Helped } from "../../types/helped.types"
-
+ 
 const initialState: Helped[] = []
 
 const helpedsSlice = createSlice({

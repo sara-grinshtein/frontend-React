@@ -1,17 +1,29 @@
-import { FormEvent, useState } from "react";
+ import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../sevices/axios";
-import { isAxiosError } from "axios"
+import { isAxiosError } from "axios";
+import { setSession } from "../auth/auth.utils";
+import jwtDecode from "jwt-decode";
+import { useAppDispatch } from "../redux/store";
+import { setHelpeds } from "../redux/helpeds/helpedSlice";
+import { setAuth } from "../redux/auth/authSlice";
 
-export const SignUpPage = () => {
+interface JwtPayload {
+  email: string;
+  userId: string;
+  [key: string]: any;
+}
+
+const SignUpPage = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
-    role: "Volunteer", // ברירת מחדל
+    role: "Volunteer",
     tel: "",
     location: "",
   });
@@ -24,19 +36,75 @@ export const SignUpPage = () => {
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    try {
-      const response = await axios.post("/Login", formData);
-      alert(response.data);
-      navigate("/auth/login");
-    } catch (error) {
 
- 
+    const userPayload = {
+      FirstName: formData.firstName,
+      LastName: formData.lastName,
+      Email: formData.email,
+      Password: formData.password,
+      Role: formData.role,
+      Tel: formData.tel,
+      Location: formData.location,
+    };
+
+    try {
+      const res = await axios.post("/Login", userPayload);
+      const token = res.data?.token;
+
+      if (!token) {
+        alert("שגיאה: לא חזר טוקן מהשרת");
+        return;
+      }
+
+      setSession(token);
+      const decoded = jwtDecode<JwtPayload>(token);
+
+      dispatch(
+        setAuth({ email: decoded.email, role: formData.role.toLowerCase() })
+      );
+
+      if (formData.role === "Volunteer") {
+        const volunteer = res.data?.volunteer;
+        if (!volunteer) {
+          alert("שגיאה: לא חזרו נתוני מתנדב");
+          return;
+        }
+
+        // שמירת המתנדב זמנית עד לבחירת תחומי ידע
+        localStorage.setItem("tempVolunteer", JSON.stringify(volunteer));
+
+        alert("נרשמת בהצלחה! נא לבחור תחומי ידע להשלמת ההרשמה");
+        navigate("/volunteer/select-knowledge"); // לוודא שזה הנתיב הנכון
+
+      } else {
+        const helped = res.data?.helped;
+        if (!helped) {
+          alert("שגיאה: לא חזרו נתוני נעזר");
+          return;
+        }
+        dispatch(setHelpeds([helped]));
+        localStorage.setItem("helped", JSON.stringify(helped));
+        alert("נרשמת בהצלחה ");
+        navigate("/helped-dashboard");
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const msg = error.response?.data;
+        if (typeof msg === "string" && msg.includes("already exists")) {
+          alert("משתמש עם האימייל הזה כבר קיים במערכת");
+        } else {
+          alert("שגיאה: " + (msg?.message || JSON.stringify(msg)));
+        }
+      } else {
+        alert("שגיאה כללית בהרשמה");
+      }
     }
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <h1>signup page</h1>
+    <form onSubmit={onSubmit} style={{ direction: "rtl", padding: "2rem" }}>
+      <h1>הרשמה</h1>
+
       <input
         name="firstName"
         placeholder="שם פרטי"
@@ -53,16 +121,16 @@ export const SignUpPage = () => {
       />
       <input
         name="email"
-        placeholder="אימייל"
         type="email"
+        placeholder="אימייל"
         value={formData.email}
         onChange={onChange}
         required
       />
       <input
         name="password"
-        placeholder="סיסמה"
         type="password"
+        placeholder="סיסמה"
         value={formData.password}
         onChange={onChange}
         required
@@ -74,16 +142,28 @@ export const SignUpPage = () => {
         onChange={onChange}
         required
       />
-      
+      <input
+        name="location"
+        placeholder="מיקום"
+        value={formData.location}
+        onChange={onChange}
+        required
+      />
+
       <select name="role" value={formData.role} onChange={onChange}>
         <option value="Volunteer">מתנדב</option>
         <option value="Helped">נעזר</option>
       </select>
-      <button type="submit">הרשמה</button>
+
+      <button type="submit" style={{ marginTop: "1rem" }}>
+        הרשמה
+      </button>
+
       <p>
         כבר רשום? <Link to="/auth/login">התחבר</Link>
       </p>
     </form>
   );
 };
-export default SignUpPage
+
+export default SignUpPage;
