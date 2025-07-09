@@ -4,7 +4,7 @@ import { MessageType } from "../types/messsage.types";
 import jwt_decode from "jwt-decode";
 
 type MyToken = {
-  userId: number;
+  userId: string; // עדכנתי כאן למחרוזת לפי הפלט של הטוקן
   email: string;
   role: string;
   exp: number;
@@ -21,19 +21,24 @@ const VolunteerDashboard = () => {
         if (!token) return;
 
         const decoded = jwt_decode<MyToken>(token);
-        const userId = decoded.userId;
+        const userId = Number(decoded.userId); // ✅ תיקון חשוב
+        console.log("🔐 decoded token:", decoded);
 
         const response = await axiosInstance.get("/message", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const unhandled = response.data.filter(
-          (m: MessageType) => m.volunteer_id === null && !m.isDone
+        console.log("📦 all messages from server:", response.data);
+
+        const assignedMessages = response.data.filter(
+          (m: MessageType) => m.volunteer_id === userId && !m.isDone
         );
 
-        setMessages(unhandled);
+        console.log("✅ filtered messages for volunteer:", assignedMessages);
+
+        setMessages(assignedMessages);
       } catch (err) {
-        console.error("שגיאה בשליפת בקשות:", err);
+        console.error("❌ שגיאה בשליפת בקשות:", err);
       } finally {
         setLoading(false);
       }
@@ -48,7 +53,7 @@ const VolunteerDashboard = () => {
       if (!token) return;
 
       const decoded = jwt_decode<MyToken>(token);
-      const volunteerId = decoded.userId;
+      const volunteerId = Number(decoded.userId); // ✅ גם כאן
 
       await axiosInstance.put(
         `/message/${messageId}`,
@@ -69,7 +74,7 @@ const VolunteerDashboard = () => {
         )
       );
     } catch (err) {
-      console.error("שגיאה באישור הגעה:", err);
+      console.error("❌ שגיאה באישור הגעה:", err);
     }
   };
 
@@ -78,8 +83,9 @@ const VolunteerDashboard = () => {
   return (
     <div style={{ direction: "rtl", padding: "2rem" }}>
       <h1>ברוך הבא לדף מתנדב</h1>
+
       {messages.length === 0 ? (
-        <p>אין כרגע בקשות לעזרה</p>
+        <p>אין כרגע בקשות ששויכו אליך</p>
       ) : (
         messages.map((msg) => (
           <div
