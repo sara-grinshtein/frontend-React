@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+  import React, { useEffect, useState } from 'react';
 import axiosInstance from '../sevices/axios';
 import { MessageType } from '../types/messsage.types';
 import {
@@ -11,6 +11,7 @@ import {
   Value,
   Loading,
   Empty,
+  Button,
 } from "./style-seeMyMessages";
 import jwt_decode from 'jwt-decode';
 
@@ -28,19 +29,22 @@ const SeeAssignedMessagesVolunteer = () => {
 
   const fetchMessages = async () => {
     try {
-      if (!token) {
-        console.error("לא קיים טוקן");
-        setLoading(false);
-        return;
-      }
-
-      // ✅ קריאה ל-API הנכון (לפי הטוקן, אין צורך ב-id)
       const response = await axiosInstance.get("/message/my-messages");
       setMessages(response.data);
     } catch (error) {
-      console.error("שגיאה בשליפת ההודעות של המתנדב:", error);
+      console.error("שגיאה בשליפת ההודעות:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleConfirmArrival = async (messageId: number) => {
+    try {
+      await axiosInstance.post(`/message/confirm-arrival/${messageId}`);
+      await fetchMessages(); // רענון לאחר אישור הגעה
+    } catch (error) {
+      console.error("שגיאה באישור הגעה:", error);
+      alert("אירעה שגיאה באישור הגעה");
     }
   };
 
@@ -52,7 +56,7 @@ const SeeAssignedMessagesVolunteer = () => {
 
   return (
     <Container>
-      <Title>עמוד משימות שלי כמתנדב</Title>
+      <Title>ברוך הבא לדף מתנדב</Title>
       <SubTitle>בקשות ששובצת אליהן</SubTitle>
 
       {messages.length === 0 ? (
@@ -63,13 +67,21 @@ const SeeAssignedMessagesVolunteer = () => {
             <Field><Label>כותרת:</Label> {msg.title}</Field>
             <Field><Label>תיאור:</Label> {msg.description}</Field>
             <Field><Label>כתובת:</Label> {msg.location}</Field>
-            <Field>
-              <Label>אישור הגעה:</Label>
-              <Value isPositive={msg.confirmArrival}>{msg.confirmArrival ? 'כן' : 'לא'}</Value>
-            </Field>
+            <Field><Label>טלפון ליצירת קשר:</Label> {msg.phone}</Field>
+
+    <Field>
+  <Label>אישור הגעה:</Label>
+  {msg.confirmArrival === true ? (
+    <Value isPositive>✔ אישור הגעה</Value>
+  ) : (
+    <Button onClick={() => handleConfirmArrival(msg.message_id)}>אני מגיע</Button>
+  )}
+</Field>
+
+
             <Field>
               <Label>טופל:</Label>
-              <Value isPositive={msg.isDone}>{msg.isDone ? 'כן' : 'לא'}</Value>
+              <Value isPositive={msg.isDone}>{msg.isDone ? "כן" : "לא"}</Value>
             </Field>
           </MessageCard>
         ))

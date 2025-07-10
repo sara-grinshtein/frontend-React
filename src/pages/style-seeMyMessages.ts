@@ -5,7 +5,7 @@ export const Container = styled.div`
   margin: 0 auto;
   padding: 24px;
   direction: rtl;
-`;
+`; 
 
 export const Title = styled.h1`
   font-size: 28px;

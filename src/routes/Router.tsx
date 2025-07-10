@@ -13,7 +13,7 @@ import VolunteerAssignedMessages from "../pages/SeeAssignedMessagesVolunteer";
 import VolunteerProfile from "../pages/VolunteerProfile";
 import VolunteerKnowledgeStep from "../pages/VolunteerKnowledgeStep";
 
-// רכיב עוטף לקבלת volunteerId מכתובת ה-URL והעברת הפרופס ל-VolunteerProfile
+// רכיב עוטף לפרופיל מתנדב - מקבל volunteerId מה-URL
 const VolunteerProfileWithId: React.FC = () => {
   const params = useParams();
   const volunteerId = params.volunteerId ? parseInt(params.volunteerId, 10) : 0;
@@ -23,6 +23,7 @@ const VolunteerProfileWithId: React.FC = () => {
   return <VolunteerProfile volunteerId={volunteerId} />;
 };
 
+// הגדרת הנתיבים
 const router = createBrowserRouter([
   {
     path: "/",
@@ -37,7 +38,7 @@ const router = createBrowserRouter([
       { path: "helped-dashboard", element: <HelpedDashboard /> },
       { path: "my-messages", element: <SeeMyMassagesHelped /> },
       { path: "volunteer-my-messages", element: <VolunteerAssignedMessages /> },
-      // נתיב עם פרמטר volunteerId
+      // הנתיב הבא מחייב לכלול volunteerId - אחרת תתקבל שגיאה
       { path: "volunteer/profile/:volunteerId", element: <VolunteerProfileWithId /> },
       { path: "volunteer/select-knowledge", element: <VolunteerKnowledgeStep /> },
     ],

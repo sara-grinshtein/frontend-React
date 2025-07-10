@@ -112,10 +112,14 @@ const SeeMyMassagesHelped = () => {
               <Value isPositive={massage.isDone}>{massage.isDone ? 'כן' : 'לא'}</Value>
             </Field>
 
-            <Field>
-              <Label>אישור הגעה:</Label> 
-              <Value isPositive={massage.confirmArrival}>{massage.confirmArrival ? 'כן' : 'לא'}</Value>
-            </Field>
+        <Field>
+  <Label>אישור הגעה:</Label>
+ <Value isPositive={massage.confirmArrival === true}>
+  {massage.confirmArrival === true ? '✔ אושרה הגעה' : 'ממתין לאישור'}
+</Value>
+
+</Field>
+
 
             <Button onClick={() => openModal(massage.message_id)}>השאר תגובה</Button>
           </MessageCard>
