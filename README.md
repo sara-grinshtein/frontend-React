@@ -93,4 +93,4 @@ You can deploy the build to **Netlify**, **Vercel**, or any static hosting provi
 
 ## 📜 License
 
-Add a LICENSE file (e.g., MIT) and reference it here.
+
