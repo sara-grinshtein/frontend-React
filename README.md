@@ -1,46 +1,96 @@
-# Getting Started with Create React App
+# 🎨 ProjectYedidim – Client (React)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Frontend client built with **React (CRA)** for interacting with the volunteer assistance backend.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📑 Table of Contents
+- ⚡ [Installation & Run](#installation-run)
+- 🛠 [Available Scripts](#available-scripts)
+- 🔌 [API Configuration](#api-configuration)
+- 📦 [Main Dependencies](#main-dependencies)
+- 🧪 [Testing](#testing)
+- 🚀 [Build & Deployment](#build-deployment)
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+<a id="installation-run"></a>
+## ⚡ Installation & Run
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Clone the repository and install dependencies:
 
-### `npm test`
+    git clone https://github.com/sara-grinshtein/frontend-React.git
+    cd frontend-React
+    npm install
+    npm start
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Runs the app in development mode  
+- Open **http://localhost:3000** in your browser  
+- The page reloads when you make changes  
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+<a id="available-scripts"></a>
+## 🛠 Available Scripts
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Inside the project directory you can run:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `npm start` → Runs the app in development mode  
+- `npm test` → Launches the test runner (watch mode)  
+- `npm run build` → Builds the app for production (output in `build/`)  
+- `npm run eject` → Exposes CRA config files (⚠️ irreversible)  
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+<a id="api-configuration"></a>
+## 🔌 API Configuration
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The frontend communicates with the backend (ASP.NET Core API).  
+Update your API base URL inside your axios configuration or environment file:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+    REACT_APP_API_URL=http://localhost:5171/api
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+For production, configure accordingly.  
+👉 Backend repository: https://github.com/sara-grinshtein/backend-ASP.NET-Core
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+<a id="main-dependencies"></a>
+## 📦 Main Dependencies
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- ⚛️ **React 18** – UI framework  
+- 🔄 **Redux Toolkit** – state management  
+- 🌐 **axios** – HTTP requests  
+- 🗺 **react-router-dom v7** – routing  
+- 🎨 **styled-components** – styling  
+- ✅ **react-hook-form** – form management  
+- 🔑 **jwt-decode** – JWT token handling  
+
+---
+
+<a id="testing"></a>
+## 🧪 Testing
+
+Uses **Jest** and **React Testing Library**:  
+
+    npm test
+
+Tests run in watch mode by default.  
+
+---
+
+<a id="build-deployment"></a>
+## 🚀 Build & Deployment
+
+Build for production:
+
+    npm run build
+
+This creates a `build/` directory with optimized static files.  
+You can deploy the build to **Netlify**, **Vercel**, or any static hosting provider.  
+
+---
+
+## 📜 License
+
+Add a LICENSE file (e.g., MIT) and reference it here.
