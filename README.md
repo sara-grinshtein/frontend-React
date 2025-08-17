@@ -91,9 +91,6 @@ You can deploy the build to **Netlify**, **Vercel**, or any static hosting provi
 
 ---
 
-## 📜 License
-
----
 
 ## 📜 License
 
