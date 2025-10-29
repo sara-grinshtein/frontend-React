@@ -68,29 +68,6 @@ For production, configure accordingly.
 
 ---
 
-<a id="testing"></a>
-## 🧪 Testing
-
-Uses **Jest** and **React Testing Library**:  
-
-    npm test
-
-Tests run in watch mode by default.  
-
----
-
-<a id="build-deployment"></a>
-## 🚀 Build & Deployment
-
-Build for production:
-
-    npm run build
-
-This creates a `build/` directory with optimized static files.  
-You can deploy the build to **Netlify**, **Vercel**, or any static hosting provider.  
-
----
-
 
 ## 📜 License
 
