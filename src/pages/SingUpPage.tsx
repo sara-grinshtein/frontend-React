@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login, register, Role } from "../sevices/auth.service";
 
-// Local form state used by the sign-up screen
 type FormState = {
   role: Role;
   firstName: string;
@@ -13,8 +12,8 @@ type FormState = {
   tel?: string;
   latitude?: number;
   longitude?: number;
-  start_time?: string; // "HH:mm"
-  end_time?: string;   // "HH:mm"
+  start_time?: string;
+  end_time?: string;
 };
 
 const initialState: FormState = {
@@ -53,30 +52,26 @@ const SingUpPage: React.FC = () => {
 
     setLoading(true);
     try {
-      // 1) Register new user (POST /api/Login) — backend returns a token on success
-      const regPayload = {
-        Role: form.role,
-        FirstName: form.firstName,
-        LastName: form.lastName,
-        Password: form.password,
-        Email: form.email,
-        Tel: form.tel,
-        Latitude: form.latitude,
-        Longitude: form.longitude,
-        Start_time: form.start_time,
-        End_time: form.end_time,
-      };
+      // 1) Register (server returns token on success)
+      const regRes = await register({
+        role: form.role,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        password: form.password,
+        email: form.email,
+        tel: form.tel,
+        latitude: form.latitude,
+        longitude: form.longitude,
+        start_time: form.start_time,
+        end_time: form.end_time,
+      });
 
-      const registerResult = await register(regPayload);
-      let token = registerResult?.token;
+      let token = regRes?.token;
 
-      // 2) Fallback: if for any reason no token returned from register, try explicit login
+      // 2) Fallback login if token not returned from register
       if (!token) {
-        const loginResult = await login({
-          Email: form.email,
-          Password: form.password,
-        });
-        token = loginResult?.token;
+        const loginRes = await login({ email: form.email, password: form.password });
+        token = loginRes?.token;
       }
 
       if (!token) {
@@ -84,11 +79,9 @@ const SingUpPage: React.FC = () => {
         return;
       }
 
-      // 3) Persist token (replace with your auth storage mechanism if needed)
       localStorage.setItem("token", token);
-
       alert("Signed up successfully!");
-      navigate("/"); // Navigate to your desired route
+      navigate("/");
     } catch (err: any) {
       console.error("Sign-up/login flow error:", err);
       const serverMsg = err?.response?.data
@@ -103,7 +96,6 @@ const SingUpPage: React.FC = () => {
   return (
     <div style={{ maxWidth: 480, margin: "40px auto" }}>
       <h1>Sign Up</h1>
-
       <form onSubmit={handleSubmit}>
         <label style={{ display: "block", marginTop: 8 }}>
           Role:
@@ -115,90 +107,47 @@ const SingUpPage: React.FC = () => {
 
         <label style={{ display: "block", marginTop: 8 }}>
           First name:
-          <input
-            type="text"
-            value={form.firstName}
-            onChange={onChange("firstName")}
-            required
-          />
+          <input type="text" value={form.firstName} onChange={onChange("firstName")} required />
         </label>
 
         <label style={{ display: "block", marginTop: 8 }}>
           Last name:
-          <input
-            type="text"
-            value={form.lastName}
-            onChange={onChange("lastName")}
-            required
-          />
+          <input type="text" value={form.lastName} onChange={onChange("lastName")} required />
         </label>
 
         <label style={{ display: "block", marginTop: 8 }}>
           Email:
-          <input
-            type="email"
-            value={form.email}
-            onChange={onChange("email")}
-            required
-          />
+          <input type="email" value={form.email} onChange={onChange("email")} required />
         </label>
 
         <label style={{ display: "block", marginTop: 8 }}>
           Password:
-          <input
-            type="password"
-            value={form.password}
-            onChange={onChange("password")}
-            required
-          />
+          <input type="password" value={form.password} onChange={onChange("password")} required />
         </label>
 
         <label style={{ display: "block", marginTop: 8 }}>
           Phone (optional):
-          <input
-            type="tel"
-            value={form.tel}
-            onChange={onChange("tel")}
-            placeholder="050-0000000"
-          />
+          <input type="tel" value={form.tel} onChange={onChange("tel")} />
         </label>
 
         <label style={{ display: "block", marginTop: 8 }}>
           Latitude (optional):
-          <input
-            type="number"
-            step="any"
-            value={form.latitude ?? ""}
-            onChange={onChange("latitude")}
-          />
+          <input type="number" step="any" value={form.latitude ?? ""} onChange={onChange("latitude")} />
         </label>
 
         <label style={{ display: "block", marginTop: 8 }}>
           Longitude (optional):
-          <input
-            type="number"
-            step="any"
-            value={form.longitude ?? ""}
-            onChange={onChange("longitude")}
-          />
+          <input type="number" step="any" value={form.longitude ?? ""} onChange={onChange("longitude")} />
         </label>
 
         <label style={{ display: "block", marginTop: 8 }}>
           Start time (optional):
-          <input
-            type="time"
-            value={form.start_time ?? ""}
-            onChange={onChange("start_time")}
-          />
+          <input type="time" value={form.start_time ?? ""} onChange={onChange("start_time")} />
         </label>
 
         <label style={{ display: "block", marginTop: 8 }}>
           End time (optional):
-          <input
-            type="time"
-            value={form.end_time ?? ""}
-            onChange={onChange("end_time")}
-          />
+          <input type="time" value={form.end_time ?? ""} onChange={onChange("end_time")} />
         </label>
 
         <button type="submit" disabled={loading} style={{ marginTop: 16 }}>
