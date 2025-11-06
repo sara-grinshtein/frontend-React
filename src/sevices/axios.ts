@@ -1,30 +1,33 @@
- import axios, { AxiosResponse } from "axios";
+// src/services/axios.ts
+import axios, { AxiosResponse } from "axios";
 import { removeSession } from "../auth/auth.utils";
 
-// the base API's adress
-//const baseURL = "http://localhost:5171/api";
-const baseURL =   process.env.REACT_APP_API_URL?.replace(/\/+$/, "") || "http://localhost:5171";
+// 1) Define the base API URL and append "/api" to it
+const base =
+  (process.env.REACT_APP_API_URL || "").replace(/\/+$/, "") || "http://localhost:5171";
+const baseURL = `${base}/api`;
 
-console.log("API URL:", process.env.REACT_APP_API_URL);
+// 2) Useful console logs
+console.log("Axios baseURL:", baseURL);
 
-// generate axios instance with baseURL
+// 3) Create an Axios instance
 const axiosInstance = axios.create({ baseURL });
 
-// to inspector request - add the token to each request
+// 4) Request interceptor – adds token and logs every request
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  console.log("→", (config.method || "GET").toUpperCase(), `${config.baseURL}${config.url}`);
   return config;
 });
 
-// interceptor for responses – in case of 401 deletes the session
+// 5) Response interceptor – handles 401 errors and logs responses
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      console.warn("קיבלנו 401 – מסירים session");
+    console.log("← ERROR", error.response?.status, error.response?.data);
+    if (error.response?.status === 401) {
+      console.warn("Received 401 – clearing session");
       removeSession();
     }
     return Promise.reject(error);
