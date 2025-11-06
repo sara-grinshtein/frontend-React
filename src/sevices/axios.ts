@@ -1,13 +1,15 @@
  import axios, { AxiosResponse } from "axios";
 import { removeSession } from "../auth/auth.utils";
 
-// כתובת בסיס של ה־API
-const baseURL = "http://localhost:5171/api";
+// the base API's adress
+//const baseURL = "http://localhost:5171/api";
+const baseURL =   process.env.REACT_APP_API_URL?.replace(/\/+$/, "") || "http://localhost:5171";
 
-// יצירת מופע axios עם baseURL
+
+// generate axios instance with baseURL
 const axiosInstance = axios.create({ baseURL });
 
-// ✅ Interceptor לבקשות – מוסיף את ה־token לכל בקשה
+// to inspector request - add the token to each request
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -16,12 +18,12 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// ✅ Interceptor לתשובות – במקרה של 401 מוחק את ה־session
+// interceptor for responses – in case of 401 deletes the session
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      console.warn("🔐 קיבלנו 401 – מסירים session");
+      console.warn("קיבלנו 401 – מסירים session");
       removeSession();
     }
     return Promise.reject(error);

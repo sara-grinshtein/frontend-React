@@ -1,4 +1,4 @@
- import React from "react";
+import React from "react";
 import { createBrowserRouter, RouterProvider, useParams } from "react-router-dom";
 
 import LoginPage from "../pages/LoginPage";

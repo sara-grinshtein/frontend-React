@@ -6,7 +6,7 @@ import volunteersReducer from "./volunteers/volunteerSlice"; // ✅ הוספה
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    volunteers: volunteersReducer, // ✅ חיבור ה־slice
+    volunteers: volunteersReducer, 
   },
 });
 
