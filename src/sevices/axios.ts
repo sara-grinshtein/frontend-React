@@ -5,6 +5,7 @@ import { removeSession } from "../auth/auth.utils";
 //const baseURL = "http://localhost:5171/api";
 const baseURL =   process.env.REACT_APP_API_URL?.replace(/\/+$/, "") || "http://localhost:5171";
 
+console.log("API URL:", process.env.REACT_APP_API_URL);
 
 // generate axios instance with baseURL
 const axiosInstance = axios.create({ baseURL });
