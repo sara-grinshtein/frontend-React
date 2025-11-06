@@ -4,7 +4,7 @@ import { MessageType } from "../types/messsage.types";
 import jwt_decode from "jwt-decode";
 
 type MyToken = {
-  userId: string; // עדכנתי כאן למחרוזת לפי הפלט של הטוקן
+  userId: string; 
   email: string;
   role: string;
   exp: number;
@@ -21,8 +21,8 @@ const VolunteerDashboard = () => {
         if (!token) return;
 
         const decoded = jwt_decode<MyToken>(token);
-        const userId = Number(decoded.userId); // ✅ תיקון חשוב
-        console.log("🔐 decoded token:", decoded);
+        const userId = Number(decoded.userId); 
+        console.log(" decoded token:", decoded);
 
         const response = await axiosInstance.get("/message", {
           headers: { Authorization: `Bearer ${token}` },
@@ -74,7 +74,7 @@ const VolunteerDashboard = () => {
         )
       );
     } catch (err) {
-      console.error("❌ שגיאה באישור הגעה:", err);
+      console.error(" שגיאה באישור הגעה:", err);
     }
   };
 

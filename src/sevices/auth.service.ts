@@ -4,7 +4,7 @@ import type { AxiosResponse } from "axios";
 
 export type Role = "Volunteer" | "Helped";
 
-// ---- payloads ----
+// ---- Input types ----
 type LoginCamel = { email: string; password: string };
 type LoginPascal = { Email: string; Password: string };
 
@@ -17,10 +17,9 @@ type RegisterCamel = {
   tel?: string;
   latitude?: number;
   longitude?: number;
-  start_time?: string; // "HH:mm"
-  end_time?: string;   // "HH:mm"
+  start_time?: string;
+  end_time?: string;
 };
-
 type RegisterPascal = {
   Role: Role;
   FirstName: string;
@@ -34,7 +33,8 @@ type RegisterPascal = {
   End_time?: string;
 };
 
-// ---- helpers ----
+// ---- Normalizers ----
+// Convert camelCase objects to PascalCase to match the backend DTO
 function normalizeLoginData(data: LoginCamel | LoginPascal): LoginPascal {
   if ("Email" in data && "Password" in data) return data;
   const d = data as LoginCamel;
@@ -60,27 +60,38 @@ function normalizeRegisterData(
   };
 }
 
-// ---- API ----
+// ---- Token extractor ----
+// Extract token safely even if backend returns different key names
+export function extractToken(payload: any): string | undefined {
+  if (!payload) return undefined;
+  if (typeof payload === "string") return payload;
+  if (typeof payload?.token === "string") return payload.token;
+  if (typeof payload?.Token === "string") return payload.Token;
+  if (typeof payload?.result?.token === "string") return payload.result.token;
+  if (typeof payload?.data?.token === "string") return payload.data.token;
+  return undefined;
+}
 
-// ✅ Login → POST /Login/login  (NOT /api/Login/login because baseURL already includes /api)
+// ---- API Calls ----
+
+// ✅ Login → POST /Login/login  (token extractor will handle any shape)
 export const login = async (
   data: LoginCamel | LoginPascal
-): Promise<AxiosResponse<{ token: string }>> => {
+): Promise<AxiosResponse<any>> => {
   const payload = normalizeLoginData(data);
-  const response = await axios.post<{ token: string }>(`/Login/login`, payload);
+  const response = await axios.post(`/Login/login`, payload, {
+    headers: { "Content-Type": "application/json" },
+  });
   return response;
 };
 
-// ✅ Register → POST /Login  (NOT /api/Login)
+// ✅ Register → POST /Login
 export const register = async (
   data: RegisterCamel | RegisterPascal
-): Promise<
-  AxiosResponse<{ token: string; volunteer?: any; helped?: any }>
-> => {
+): Promise<AxiosResponse<any>> => {
   const payload = normalizeRegisterData(data);
-  const response = await axios.post<{ token: string; volunteer?: any; helped?: any }>(
-    `/Login`,
-    payload
-  );
+  const response = await axios.post(`/Login`, payload, {
+    headers: { "Content-Type": "application/json" },
+  });
   return response;
 };
